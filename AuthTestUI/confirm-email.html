@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Confirmed - GP2026 Test</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Email Confirmation</h1>
+        <p class="subtitle" id="statusMessage">Verifying your email address...</p>
+
+        <div id="alert" class="alert"></div>
+
+        <div id="successContent" style="display: none; text-align: center;">
+            <p style="margin-bottom: 24px;">Your account has been successfully verified. You can now access all
+                features.</p>
+            <button onclick="window.location.href='login.html'">Go to Login</button>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        async function verifyEmail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('userId');
+            const token = urlParams.get('token');
+
+            if (!userId || !token) {
+                showAlert('error', 'Invalid confirmation link.');
+                document.getElementById('statusMessage').textContent = 'Verification Failed';
+                return;
+            }
+
+            try {
+                // نادِ الـ API الخاص بالتفعيل
+                // ملحوظة: اللينك الـ جاي من الميل بيبقي رايح للـ API مباشرة
+                // بس هنا بنعمل صفحة تستقبل اللينك وتكلم الـ API
+                const response = await fetch(`${CONFIG.BASE_URL}/Confirm-Email?userId=${userId}&token=${encodeURIComponent(token)}`);
+                const result = await handleResponse(response);
+
+                document.getElementById('statusMessage').textContent = 'Verified!';
+                showAlert('success', 'Email confirmed successfully!');
+                document.getElementById('successContent').style.display = 'block';
+            } catch (error) {
+                showAlert('error', error.message);
+                document.getElementById('statusMessage').textContent = 'Verification Failed';
+            }
+        }
+
+        window.onload = verifyEmail;
+    </script>
+</body>
+
+</html>

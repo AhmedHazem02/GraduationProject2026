@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(if [ -f \"d:/GraduationProject2026/GraduationProject2026/G_P2026.Data/DTOs/Auth/RegisterDto.cs\" ])",
+      "Bash(then echo \"exists\")",
+      "Bash(else echo \"not exists\")",
+      "Bash(fi)",
+      "Bash(cat:*)"
+    ]
+  }
+}

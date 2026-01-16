@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - GP2026 Test</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container" style="max-width: 600px;">
+        <h1>Dashboard</h1>
+        <p class="subtitle">Welcome to your secure area.</p>
+
+        <div id="alert" class="alert"></div>
+
+        <div id="userInfo" class="form-group"
+            style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid var(--card-border);">
+            <p><strong>Status:</strong> <span style="color: #4ade80;">Authenticated</span></p>
+            <p style="margin-top: 10px; color: var(--text-muted);">Your JWT Token is stored in local storage.</p>
+        </div>
+
+        <button id="logoutBtn" style="background: #ef4444;">
+            <div class="btn-content">
+                <span>Logout</span>
+                <div class="spinner"></div>
+            </div>
+        </button>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            toggleLoading(true);
+            try {
+                // نادِ الـ API الخاص بالـ Logout
+                const response = await fetch(`${CONFIG.BASE_URL}/Logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                localStorage.removeItem('token');
+                showAlert('success', 'Logged out successfully!');
+                setTimeout(() => window.location.href = 'login.html', 1000);
+            } catch (error) {
+                showAlert('error', 'Logout failed: ' + error.message);
+                // Even if API fails, clear local token
+                localStorage.removeItem('token');
+                setTimeout(() => window.location.href = 'login.html', 2000);
+            } finally {
+                toggleLoading(false);
+            }
+        });
+    </script>
+</body>
+
+</html>
