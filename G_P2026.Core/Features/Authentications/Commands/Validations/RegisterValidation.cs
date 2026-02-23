@@ -31,6 +31,17 @@ namespace G_P2026.Core.Features.Authentications.Commands.Validations
 				.NotEmpty().WithMessage("Role is required")
 				.Must(role => role == "Student" || role == "Mentor")
 				.WithMessage("Role must be either 'Student' or 'Mentor'");
+
+			RuleFor(x => x.Skills)
+				.Must(skills => skills == null || skills.Count <= 20)
+				.WithMessage("Cannot have more than 20 skills")
+				.Must(skills => skills == null || skills.All(s => !string.IsNullOrWhiteSpace(s) && s.Length <= 100))
+				.WithMessage("Each skill must not be empty and must not exceed 100 characters")
+				.When(x => x.Skills != null);
+
+			RuleFor(x => x.Paid)
+				.GreaterThanOrEqualTo(0).WithMessage("Paid amount must be a positive number")
+				.When(x => x.Paid.HasValue);
 		}
 	}
 }

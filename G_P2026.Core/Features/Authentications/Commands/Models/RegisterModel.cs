@@ -2,6 +2,7 @@ using G_P2026.Core.Bases;
 using G_P2026.Data.DTOs.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using System.Text.Json.Serialization;
 
 namespace G_P2026.Core.Features.Authentications.Commands.Models
 {
@@ -17,6 +18,14 @@ namespace G_P2026.Core.Features.Authentications.Commands.Models
 		public string? Bio { get; set; }
 		public IFormFile? CvFile { get; set; }
 		public string? Role { get; set; }
+
+		// New fields
+		public List<string>? Skills { get; set; }
+		public string? University { get; set; }
+		public bool? IsActive { get; set; }
+		public int? Paid { get; set; }
+
+		[JsonIgnore]
 		public string? BaseUrl { get; set; }
 	}
 }

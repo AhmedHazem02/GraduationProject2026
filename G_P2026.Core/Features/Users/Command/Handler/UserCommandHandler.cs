@@ -34,6 +34,12 @@ namespace G_P2026.Core.Features.Users.Command.Handler
 			// Map request to existing user
 			_mapper.Map(request, existingUser);
 
+			// Map new fields manually
+			if (request.University != null) existingUser.University = request.University;
+			if (request.Skills != null) existingUser.Skills = request.Skills;
+			if (request.IsActive.HasValue) existingUser.IsActive = request.IsActive;
+			if (request.Paid.HasValue) existingUser.Paid = request.Paid;
+
 			// Update User
 			var updatedUser = await _userManager.UpdateAsync(existingUser);
 
@@ -48,12 +54,11 @@ namespace G_P2026.Core.Features.Users.Command.Handler
 
 		public async Task<Response<string>> Handle(DeleteUserModel request, CancellationToken cancellationToken)
 		{
-			var User=await _userManager.FindByIdAsync(request.UserId);
-			if (User == null)return NotFound<string>("User not found");
+			var User = await _userManager.FindByIdAsync(request.UserId);
+			if (User == null) return NotFound<string>("User not found");
 			var result = await _userManager.DeleteAsync(User);
-			if (!result.Succeeded)return BadRequest<string>(result.Errors.Select(e => e.Description).FirstOrDefault() ?? "Failed to delete user");
+			if (!result.Succeeded) return BadRequest<string>(result.Errors.Select(e => e.Description).FirstOrDefault() ?? "Failed to delete user");
 			return Success($"User deleted successfully With \n ID : {request.UserId} \n Name : {User.UserName}");
 		}
-
-	}
+    }
 }

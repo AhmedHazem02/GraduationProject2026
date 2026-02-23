@@ -35,6 +35,13 @@ namespace G_P2026.API.Controllers
 			return NewResult(response);
 		}
 
+		[HttpGet(Router.Auth.checkEmailVerified)]
+		public async Task<IActionResult> CheckEmailVerified([FromRoute] string email)
+		{
+			var response = await _mediator.Send(new CheckEmailVerifiedModel { Email = email });
+			return NewResult(response);
+		}
+
 		[HttpGet(Router.Auth.checkUsernameExists)]
 		public async Task<IActionResult> CheckUsername([FromRoute] string username)
 		{
@@ -61,19 +68,22 @@ namespace G_P2026.API.Controllers
 		/// Confirms user email using the token sent to their email
 		/// </summary>
 		[HttpGet(Router.Auth.ConfirmEmail)]
-		public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
+		public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailModel model)
 		{
-			if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
-				return BadRequest("UserId and Token are required");
+			var response = await _mediator.Send(model);
+			return NewResult(response);
+		}
 
-			// Decode the token (it was URL-encoded in the email link)
-			var decodedToken = System.Net.WebUtility.UrlDecode(token);
+		/// <summary>
+		/// Resends email confirmation token to the user's email
+		/// </summary>
+		[HttpPost(Router.Auth.ResendConfirmEmail)]
+		public async Task<IActionResult> ResendConfirmEmail([FromBody] ResendConfirmEmailModel model)
+		{
+			var baseUrl = $"{Request.Scheme}://{Request.Host}";
+			model.BaseUrl = baseUrl;
 
-			var response = await _mediator.Send(new ConfirmEmailModel 
-			{ 
-				UserId = userId, 
-				Token = decodedToken 
-			});
+			var response = await _mediator.Send(model);
 			return NewResult(response);
 		}
 

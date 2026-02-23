@@ -54,8 +54,19 @@ namespace G_P2026.Services.Implementations
 				UserId = user.Id,
 				UserName = user.UserName,
 				Email = user.Email,
+				EmailConfirmed = user.EmailConfirmed,
+				PhoneNumber = user.PhoneNumber,
 				Status = user.Status,
-				Roles = roles.ToList()
+				Roles = roles.ToList(),
+				Linkedin = user.Linkedin,
+				Field = user.Field,
+				CvFileName = user.CvFileName,
+				CvFileBase64 = user.CvFile != null ? Convert.ToBase64String(user.CvFile) : null,
+				Bio = user.Bio,
+				University = user.University,
+				Skills = user.Skills,
+				IsActive = user.IsActive,
+				Paid = user.Paid
 			};
 		}
 	 

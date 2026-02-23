@@ -16,5 +16,11 @@ namespace G_P2026.Infastructure.Context
 		public string? CvFileName { get; set; }
 		public string? Bio { get; set; }
 		public string? Status { get; set; }
+
+		// New fields
+		public string? University { get; set; }
+		public string? Skills { get; set; }   // stored as JSON: ["C#","Python"]
+		public bool? IsActive { get; set; }
+		public int? Paid { get; set; }
 	}
 }

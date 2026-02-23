@@ -8,6 +8,7 @@ namespace G_P2026.Services.Interfaces
 		Task<AuthResponseDto> LoginAsync(LoginDto model);
 		Task<bool> IsEmailExistsAsync(string email);
 		Task<bool> IsUsernameExistsAsync(string username);
+		Task<bool> IsEmailConfirmedAsync(string email);
 
 		/// <summary>
 		/// Logs out a user by invalidating their refresh token
@@ -18,6 +19,11 @@ namespace G_P2026.Services.Interfaces
 		/// Confirms user email with the provided token
 		/// </summary>
 		Task<bool> ConfirmEmailAsync(string userId, string token);
+
+		/// <summary>
+		/// Resends email confirmation token to the user's email
+		/// </summary>
+		Task<bool> ResendConfirmEmailAsync(string email, string baseUrl);
 
 		/// <summary>
 		/// Generates and sends password reset token to user's email

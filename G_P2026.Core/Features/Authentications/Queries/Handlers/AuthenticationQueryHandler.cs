@@ -9,7 +9,8 @@ namespace G_P2026.Core.Features.Authentications.Queries.Handlers
 {
 	public class AuthenticationQueryHandler : ResponseHandler,
 		IRequestHandler<CheckEmailExistsModel, Response<bool>>,
-		IRequestHandler<CheckUsernameExistsModel, Response<bool>>
+		IRequestHandler<CheckUsernameExistsModel, Response<bool>>,
+		IRequestHandler<CheckEmailVerifiedModel, Response<bool>>
 		
 	{
 		private readonly IAuthService _authService;
@@ -29,6 +30,12 @@ namespace G_P2026.Core.Features.Authentications.Queries.Handlers
 		{
 			var exists = await _authService.IsUsernameExistsAsync(request.Username);
 			return Success(exists);
+		}
+
+		public async Task<Response<bool>> Handle(CheckEmailVerifiedModel request, CancellationToken cancellationToken)
+		{
+			var isConfirmed = await _authService.IsEmailConfirmedAsync(request.Email);
+			return Success(isConfirmed);
 		}
 
 		

@@ -28,6 +28,12 @@ namespace G_P2026.Data.DTOs.Auth
 		public string? Bio { get; set; }
 		public IFormFile? CvFile { get; set; }
 
+		// New fields
+		public List<string>? Skills { get; set; }
+		public string? University { get; set; }
+		public bool? IsActive { get; set; }
+		public int? Paid { get; set; }
+
 		[Required(ErrorMessage = "Role is required")]
 		public string? Role { get; set; }
 	}

@@ -55,30 +55,29 @@ catch (Exception ex)
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{	
-	app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-	c.SwaggerEndpoint("/swagger/v1/swagger.json", "Graduate_Project_2026 v1");
-	c.RoutePrefix = string.Empty;  // ???? Swagger UI ??? ??????: https://localhost:xxxx/
-    });
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Graduate_Project_2026 v1");
+    c.RoutePrefix = string.Empty;  // Swagger UI accessible at root: https://mentorly.runasp.net/
+});
 
-}
+app.UseHttpsRedirection();
 
 // Enable static files
 app.UseStaticFiles(); // For wwwroot
 
 // Serve AuthTestUI files
 app.UseDefaultFiles();
-app.UseStaticFiles(new StaticFileOptions
+var authTestUiPath = Path.Combine(builder.Environment.ContentRootPath, "..", "AuthTestUI");
+if (Directory.Exists(authTestUiPath))
 {
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "..", "AuthTestUI")),
-    RequestPath = "" // Accessible directly at root
-});
-
-app.UseHttpsRedirection();
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(authTestUiPath),
+        RequestPath = "" // Accessible directly at root
+    });
+}
 app.UseRouting();
 // Enable CORS
 app.UseCors("AllowAll");

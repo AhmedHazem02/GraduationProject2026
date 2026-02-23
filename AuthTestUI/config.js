@@ -1,6 +1,6 @@
 const CONFIG = {
     // قم بتغيير المنفذ (Port) حسب اللي شغال عندك ف الـ Visual Studio (عادة 5000 أو 7000+)
-    BASE_URL: 'https://localhost:7002/Api/V1/Auth'
+    BASE_URL: 'http://localhost:5000/Api/V1/Auth'
 };
 
 async function handleResponse(response) {

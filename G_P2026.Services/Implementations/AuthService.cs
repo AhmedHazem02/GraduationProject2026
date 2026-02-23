@@ -4,6 +4,7 @@ using G_P2026.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace G_P2026.Services.Implementations
 {
@@ -73,7 +74,11 @@ namespace G_P2026.Services.Implementations
 				Bio = model.Bio,
 				CvFile = cvFileData,
 				CvFileName = cvFileName,
-				Status = DefaultStatus
+				Status = DefaultStatus,
+				University = model.University,
+				IsActive = model.IsActive,
+				Paid = model.Paid,
+				Skills = model.Skills != null ? JsonSerializer.Serialize(model.Skills) : null
 			};
 
 			var result = await _userManager.CreateAsync(user, model.Password);
@@ -136,6 +141,12 @@ namespace G_P2026.Services.Implementations
 			return await _userManager.FindByNameAsync(username) != null;
 		}
 
+		public async Task<bool> IsEmailConfirmedAsync(string email)
+		{
+			var user = await _userManager.FindByEmailAsync(email);
+			return user != null && user.EmailConfirmed;
+		}
+
 		private async Task<AuthResponseDto> GenerateAuthResponse(ApplicationUser user)
 		{
 			var userRoles = (await _userManager.GetRolesAsync(user)).ToList();
@@ -150,7 +161,13 @@ namespace G_P2026.Services.Implementations
 				ExpiresOn = DateTime.UtcNow.AddMinutes(_tokenService.GetAccessTokenExpirationMinutes()),
 				Roles = userRoles,
 				Status = user.Status,
-				CvFileName = user.CvFileName
+				CvFileName = user.CvFileName,
+				University = user.University,
+				IsActive = user.IsActive,
+				Paid = user.Paid,
+				Skills = user.Skills != null
+					? JsonSerializer.Deserialize<List<string>>(user.Skills)
+					: null
 			};
 		}
 
@@ -213,6 +230,26 @@ namespace G_P2026.Services.Implementations
 				var errors = string.Join(", ", result.Errors.Select(e => e.Description));
 				throw new Exception($"Email confirmation failed: {errors}");
 			}
+
+			return true;
+		}
+
+		public async Task<bool> ResendConfirmEmailAsync(string email, string baseUrl)
+		{
+			if (string.IsNullOrWhiteSpace(email))
+				throw new ArgumentException("Email is required", nameof(email));
+
+			var user = await _userManager.FindByEmailAsync(email);
+			if (user == null)
+				throw new Exception("User not found");
+
+			if (user.EmailConfirmed)
+				throw new Exception("Email is already confirmed");
+
+			var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+			// Send email in background to not block the user response
+			_ = _emailService.SendConfirmationEmailAsync(user.Email!, user.Id, token, baseUrl);
 
 			return true;
 		}

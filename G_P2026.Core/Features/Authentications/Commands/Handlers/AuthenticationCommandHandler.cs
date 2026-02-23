@@ -12,6 +12,7 @@ namespace G_P2026.Core.Features.Authentications.Commands.Handlers
 		IRequestHandler<LoginModel, Response<AuthResponseDto>>,
 		IRequestHandler<LogoutModel, Response<bool>>,
 		IRequestHandler<ConfirmEmailModel, Response<bool>>,
+		IRequestHandler<ResendConfirmEmailModel, Response<bool>>,
 		IRequestHandler<ForgotPasswordModel, Response<bool>>,
 		IRequestHandler<ResetPasswordModel, Response<bool>>
 	{
@@ -70,7 +71,9 @@ namespace G_P2026.Core.Features.Authentications.Commands.Handlers
 		{
 			try
 			{
-				var result = await _authService.ConfirmEmailAsync(request.UserId, request.Token);
+				// Decode the token (it was URL-encoded in the email link)
+				var decodedToken = System.Net.WebUtility.UrlDecode(request.Token);
+				var result = await _authService.ConfirmEmailAsync(request.UserId, decodedToken);
 				return Success(result);
 			}
 			catch (Exception ex)
@@ -92,10 +95,26 @@ namespace G_P2026.Core.Features.Authentications.Commands.Handlers
 			}
 		}
 
+		public async Task<Response<bool>> Handle(ResendConfirmEmailModel request, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var result = await _authService.ResendConfirmEmailAsync(request.Email, request.BaseUrl);
+				return Success(result);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest<bool>(ex.Message);
+			}
+		}
+
 		public async Task<Response<bool>> Handle(ResetPasswordModel request, CancellationToken cancellationToken)
 		{
 			try
 			{
+				// Decode the token (it was URL-encoded in the reset email link)
+				var decodedToken = System.Net.WebUtility.UrlDecode(request.Token);
+				request.Token = decodedToken;
 				var resetDto = _mapper.Map<ResetPasswordDto>(request);
 				var result = await _authService.ResetPasswordAsync(resetDto);
 				return Success(result);

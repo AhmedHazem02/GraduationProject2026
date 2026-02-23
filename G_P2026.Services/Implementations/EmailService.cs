@@ -43,7 +43,7 @@ namespace G_P2026.Services.Implementations
         public async Task<bool> SendConfirmationEmailAsync(string toEmail, string userId, string token, string baseUrl)
         {
             var encodedToken = WebUtility.UrlEncode(token);
-            var confirmationLink = $"{baseUrl}/confirm-email.html?userId={userId}&token={token}";
+            var confirmationLink = $"{baseUrl}/Api/V1/Auth/Confirm-Email?userId={userId}&token={encodedToken}";
 
             var body = BuildConfirmationEmailBody(confirmationLink);
             return await SendEmailAsync(toEmail, "Confirm Your Email - GP2026", body).ConfigureAwait(false);
@@ -52,7 +52,8 @@ namespace G_P2026.Services.Implementations
         public async Task<bool> SendPasswordResetEmailAsync(string toEmail, string token, string baseUrl)
         {
             var encodedToken = WebUtility.UrlEncode(token);
-            var resetLink = $"{baseUrl}/reset-password.html?email={toEmail}&token={encodedToken}";
+            var encodedEmail = WebUtility.UrlEncode(toEmail);
+            var resetLink = $"{baseUrl}/reset-password.html?email={encodedEmail}&token={encodedToken}";
 
             var body = BuildPasswordResetEmailBody(resetLink);
             return await SendEmailAsync(toEmail, "Reset Your Password - GP2026", body).ConfigureAwait(false);
