@@ -1,0 +1,41 @@
+name: Deploy to mentorly01.runasp.net
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore GraduationProject2026.sln
+
+      - name: Publish application
+        run: |
+          dotnet publish GraduationProject2026\G_P2026.API.csproj `
+            --configuration Release `
+            --output ./publish `
+            --runtime win-x86 `
+            --self-contained false
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./publish/
+          server-dir: /site/wwwroot/
+          dangerous-clean-slate: false
